@@ -4,7 +4,6 @@ elasticity_estimation:
   method: TNC
   optimization_tol: 1.0e-06
   printlosses: true
-energy_function: chesra1
 material_parameters: ""
 mechdata: ""
 mesh:
@@ -23,8 +22,20 @@ mesh:
   path: ""
 numerics:
   FEM_degree: 1
-  base_spring_k: 10
-  compress_penalty: 10
+  base_spring_k:
+    ex_vivo_Klotz: 0 #Indicates no base spring. Base is completely fixed.
+    in_vivo_CMR: 10
+  compress:
+    ex_vivo_Klotz:
+      model: reduced_yeoh
+      parameters:
+        K1: 7.31
+        K2: 5.12
+        K3: 2490000.0
+    in_vivo_CMR:
+      model: quad
+      parameters:
+        K: 10
   nonlinear_solver_params:
     nonlinear_solver: snes
     snes_solver:

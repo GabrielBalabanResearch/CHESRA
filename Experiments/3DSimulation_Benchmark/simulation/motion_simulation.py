@@ -2,7 +2,7 @@ import dolfin as df
 import os
 import numpy as np
 from .helpers import *
-from .energy_functions import make_energy_function, MaterialParameters
+from .energy_functions import make_energy_function, MaterialParameters, Compressibility
 from ufl_legacy.algorithms.compute_form_data import estimate_total_polynomial_degree
 
 class MicroStructure():
@@ -189,12 +189,19 @@ class MechanicsSolver():
 
 		self.d, self.Dpi, self.DDpi, self.Vol_lv, self.Vol_rv, self.matparams = self.get_variational_forms()
 
-		#No long axis (x-direction ) movement at base
-		#Spring condition along short axes at base
-		self.dirichlet_BC = df.DirichletBC(self.d.function_space().sub(0), 
-										   0,
-										   self.bivgeo.facet_markers,
-										   self.bivgeo.facet_marker_definitions["base"])
+		if simpleheart_config["numerics"].get("base_spring_k") is not None and simpleheart_config["numerics"]["base_spring_k"] > 0:
+
+			#Spring condition at base in the plane normal to z, anatomically at the valves
+			self.dirichlet_BC = df.DirichletBC(self.d.function_space().sub(0), 
+											   0,
+											   self.bivgeo.facet_markers,
+											   self.bivgeo.facet_marker_definitions["base"])
+		else:
+			#If no spring stiffness is given, fix the base in all directions to prevent rigid body motion
+			self.dirichlet_BC = df.DirichletBC(self.d.function_space(), 
+											   (0, 0, 0),
+											   self.bivgeo.facet_markers,
+											   self.bivgeo.facet_marker_definitions["base"])
 	def reinit(self):
 		return MechanicsSolver(self.bivgeo, self.simpleheart_config)
 
@@ -234,7 +241,8 @@ class MechanicsSolver():
 		pi_int = efunc.energy()
 		#######################################################################################
 		
-		pi_compress =  df.Constant(self.simpleheart_config["numerics"]["compress_penalty"])*0.5*(J - 1)**2
+		compress_func = getattr(Compressibility, self.simpleheart_config["numerics"]["compress"]["model"])
+		pi_compress = compress_func(J, self.simpleheart_config["numerics"]["compress"]["parameters"])
 
 		pi_tot = pi_int + pi_compress
 

@@ -2,6 +2,19 @@ from .helpers import gather
 import dolfin as df
 import yaml
 
+class Compressibility(object):
+	@staticmethod
+	def quad(J, compress_params):
+		K = df.Constant(compress_params["K"])
+		return K*0.5*(J - 1)**2
+
+	@staticmethod
+	def reduced_yeoh(J, compress_params):
+		K1 = df.Constant(compress_params["K1"])
+		K2 = df.Constant(compress_params["K2"])
+		K3 = df.Constant(compress_params["K3"])
+		return 0.5*(K1*(J - 1)**2 + K2*(J - 1)**4 + K3*(J - 1)**6)
+
 class MaterialParameters(object):
 	def __init__(self, mesh, names, values):
 		self.names = names

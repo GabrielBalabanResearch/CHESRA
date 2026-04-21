@@ -20,7 +20,6 @@ class HeartMechDataLoader(object):
     def __call__(self, t):
         d = df.Function(self.V)
         dispfile = df.HDF5File(df.MPI.comm_world, self.displacement_db_path, "r")
-        
         dispfile.read(d, "displacement/{}".format(t))
         mechdata_t = self.mechdata_df[self.mechdata_df["time (ms)"]  == t]
         return d, mechdata_t
@@ -53,7 +52,7 @@ class DisplacementSquareLoss(object):
         times = self.dataloader.mechdata_df["time (ms)"]
         total_loss = []
         for t in times:
-            disp_target, mechdata = self.dataloader(float(t))
+            disp_target, mechdata = self.dataloader(t)
             self.mechsolver.continuity_solve(float(mechdata["lv pressure (kPa)"].iloc[0]),
 									         float(mechdata["rv pressure (kPa)"].iloc[0]))
             
