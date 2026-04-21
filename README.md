@@ -39,8 +39,8 @@ Fig. 1: Overview of CHESRA
 ## Experiment Reproduction
 
 We provide three reproduction scripts: 1) for creating SEFs with CHESRA and visualizing their fits to experimental data
-2) for benchmarking the parameter variability when fitting CHESRA functions to tissue data and comparison to state-of-the art SEFs 3) for benchmarking 
-of parameter variability in 3-D digital twins. 
+2) for benchmarking the parameter variability when fitting CHESRA functions to tissue data and comparison to the full set of state-of-the art SEFs 3) for benchmarking 
+of parameter variability in 3D biventricular simulations with CHESRA functions and two state-of-the art SEFs. 
 
 0. Download repository and all required packages
 
@@ -64,22 +64,30 @@ of parameter variability in 3-D digital twins.
 > 
 >`python3 create_figure.py`
 
-3. Parameter variability benchmark using a 3D digital twin
+3. Parameter variability benchmark using a 3D biventricular simulations
 
->`cd Experiments/DigitalTwin_Benchmark`
+>`cd Experiments/3DSimulation_Benchmark`
 > 
->`python3 run_experiment.py -energy_function chesra1`
+>`python3 run_experiment.py -energy_function chesra1 -scenario in_vivo_CMR`
 > 
->`python3 run_experiment.py -energy_function chesra2`
+>`python3 run_experiment.py -energy_function chesra2 -scenario in_vivo CMR`
 > 
->`python3 run_experiment.py -energy_function holzapfel-ogden`
+>`python3 run_experiment.py -energy_function holzapfel-ogden -scenario in_vivo CMR` 
 > 
->`python3 run_experiment.py -energy_function martonova3`
+>`python3 run_experiment.py -energy_function martonova3 -scenario in_vivo CMR`
 > 
+>`python3 run_experiment.py -energy_function chesra1 -scenario ex_vivo_Klotz`
+> 
+>`python3 run_experiment.py -energy_function chesra2 -scenario ex_vivo Klotz`
+> 
+>`python3 run_experiment.py -energy_function holzapfel-ogden -scenario ex_vivo Klotz` 
+> 
+>`python3 run_experiment.py -energy_function martonova3 -scenario ex_vivo Klotz`
+>
 >`python3 create_figure.py`
 
-## Digital Twin Data
-The digital twin benchark requires LV pressure-volume traces, pressure-free biventricular geometries and corresponding synthetic motion fields. These data are included in the file `digital_twin_data.zip` and should unzipped before running the digital twin benchmark. For the sake of completeness the original (pressurized) mesh at end-diastole is included as the file `pressurized_bivmesh_60fibres.h5`. To access the digital twin data you can use [Git LFS](https://git-lfs.com/).
+## 3D Biventricular Simulation Data
+The biventricular simulation benchark requires LV pressure-volume traces, pressure-free biventricular geometries and corresponding synthetic motion fields. These data are included in the file `3Dsimulation_data.zip` and should unzipped before running the biventricular simulations benchmark. For the sake of completeness the original (pressurized) mesh at end-diastole is included as the file `pressurized_bivmesh_60fibres.h5`. To access the 3D biventricular simulation data you can use [Git LFS](https://git-lfs.com/).
 
 >`git lfs fetch`
 > 
@@ -88,6 +96,6 @@ The digital twin benchark requires LV pressure-volume traces, pressure-free bive
 
 **Important Notice: Git LFS Required**
 >
-> This repository uses [Git Large File Storage (Git LFS)](https://git-lfs.github.com/) to manage large files (e.g., `digital_twin_data.zip`). You will need to install and configure git LFS *before* cloning this repository to access the digital twin data.
+> This repository uses [Git Large File Storage (Git LFS)](https://git-lfs.github.com/) to manage large files (e.g., `3Dsimulation_data.zip`). You will need to install and configure git LFS *before* cloning this repository to access the 3D biventricular simulation data.
 
 
