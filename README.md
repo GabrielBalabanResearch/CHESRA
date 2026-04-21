@@ -6,7 +6,7 @@ observations while minimizing SEF complexity. CHESRA takes one or more experimen
 datasets of myocardial stress-strain relations as input and evolves a population 
 of SEFs according to the fitness function $f_\text{fit}$ (Fig. 1).
 
-![fig1_study_overview](Figures/fig1_study_overview.pdf)
+![fig1_study_overview](Figures/fig1_study_overview.png)
 Fig. 1: Overview of CHESRA
 
 ## Dependencies
