@@ -99,3 +99,15 @@ The biventricular simulation benchark requires LV pressure-volume traces, pressu
 > This repository uses [Git Large File Storage (Git LFS)](https://git-lfs.github.com/) to manage large files (e.g., `3Dsimulation_data.zip`). You will need to install and configure git LFS *before* cloning this repository to access the 3D biventricular simulation data.
 
 
+## Pull the publicly available Docker Container from DockerHub
+docker pull gabrielbalaban/chesra:1.0.0
+docker run --rm -it gabrielbalaban/chesra:1.0.0
+
+## Build your own Docker Container
+git clone https://github.com/GabrielBalabanResearch/CHESRA.git
+cd CHESRA
+git lfs pull                    # fetch 3D simulation data
+docker build -t chesra .
+docker run --rm -it \
+  -v "$(pwd)/Experiments/3DSimulation_Benchmark:/workspace/Experiments/3DSimulation_Benchmark" \
+  chesra

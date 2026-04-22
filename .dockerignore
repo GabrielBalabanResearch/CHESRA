@@ -1,0 +1,32 @@
+# Byte-compiled / optimised / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Results that don't belong in the image
+results/
+Figures/
+
+# Git internals (but keep LFS pointer files)
+.git/
+
+# macOS
+.DS_Store
+
+# Large simulation data (mounted at runtime instead)
+Experiments/3DSimulation_Benchmark/3Dsimulation_data.zip
+Experiments/3DSimulation_Benchmark/data/
+
+# Locally generated experiment results
+Experiments/3DSimulation_Benchmark/results/
+Experiments/CHESRAFunctions/results/
+Experiments/Tissue_Benchmark/results/

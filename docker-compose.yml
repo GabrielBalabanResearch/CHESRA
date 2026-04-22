@@ -1,0 +1,25 @@
+version: "3.9"
+
+# ============================================================
+# CHESRA – docker-compose convenience wrapper
+#
+# Build:   docker compose build
+# Shell:   docker compose run --rm chesra
+# ============================================================
+
+services:
+  chesra:
+    build: .
+    image: chesra:latest
+    working_dir: /workspace
+    # Mount the 3D simulation data folder so large LFS files
+    # are not baked into the image (run `git lfs pull` first)
+    volumes:
+      - ./Experiments/3DSimulation_Benchmark:/workspace/Experiments/3DSimulation_Benchmark
+     # Limit MPI thread contention (useful for 3D simulation benchmark)
+    environment:
+      - OMP_NUM_THREADS=1
+    # Override the command at the CLI, e.g.:
+    #   docker compose run --rm chesra bash -c \
+    #     "cd CHESRAFunctions && python run_experiment.py"
+    command: bash
