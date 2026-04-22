@@ -45,54 +45,43 @@ of parameter variability in 3D biventricular simulations with CHESRA functions a
 0. Download repository and all required packages
 
 1. Create SEFs with CHESRA
-
->`cd Experiments/CHESRAFunctions`
-> 
->`python3 run_experiment.py`
-> 
->`python3 create_figure.py`
-> 
+```bash
+cd Experiments/CHESRAFunctions
+python3 run_experiment.py
+python3 create_figure.py
+```
 **Note:** use the default options to run experiments similar to those in the paper. Due to random initial conditions your results may vary.
 
 >`python3 run_experiment.py --help`
 
 
 2. Parameter variability benchmark using tissue data
->`cd Experiments/Tissue_Benchmark`
-> 
->`python3 run_experiment.py`
-> 
->`python3 create_figure.py`
+```bash
+cd Experiments/Tissue_Benchmark 
+python3 run_experiment.py 
+python3 create_figure.py
+```
 
 3. Parameter variability benchmark using a 3D biventricular simulations
-
->`cd Experiments/3DSimulation_Benchmark`
-> 
->`python3 run_experiment.py -energy_function chesra1 -scenario in_vivo_CMR`
-> 
->`python3 run_experiment.py -energy_function chesra2 -scenario in_vivo CMR`
-> 
->`python3 run_experiment.py -energy_function holzapfel-ogden -scenario in_vivo CMR` 
-> 
->`python3 run_experiment.py -energy_function martonova3 -scenario in_vivo CMR`
-> 
->`python3 run_experiment.py -energy_function chesra1 -scenario ex_vivo_Klotz`
-> 
->`python3 run_experiment.py -energy_function chesra2 -scenario ex_vivo Klotz`
-> 
->`python3 run_experiment.py -energy_function holzapfel-ogden -scenario ex_vivo Klotz` 
-> 
->`python3 run_experiment.py -energy_function martonova3 -scenario ex_vivo Klotz`
->
->`python3 create_figure.py`
+```bash
+cd Experiments/3DSimulation_Benchmark
+python3 run_experiment.py -energy_function chesra1 -scenario in_vivo_CMR
+python3 run_experiment.py -energy_function chesra2 -scenario in_vivo CMR 
+python3 run_experiment.py -energy_function holzapfel-ogden -scenario in_vivo CMR 
+python3 run_experiment.py -energy_function martonova3 -scenario in_vivo CMR 
+python3 run_experiment.py -energy_function chesra1 -scenario ex_vivo_Klotz 
+python3 run_experiment.py -energy_function chesra2 -scenario ex_vivo Klotz 
+python3 run_experiment.py -energy_function holzapfel-ogden -scenario ex_vivo Klotz 
+python3 run_experiment.py -energy_function martonova3 -scenario ex_vivo Klotz
+python3 create_figure.py
+```
 
 ## 3D Biventricular Simulation Data
 The biventricular simulation benchark requires LV pressure-volume traces, pressure-free biventricular geometries and corresponding synthetic motion fields. These data are included in the file `3Dsimulation_data.zip` and should unzipped before running the biventricular simulations benchmark. For the sake of completeness the original (pressurized) mesh at end-diastole is included as the file `pressurized_bivmesh_60fibres.h5`. To access the 3D biventricular simulation data you can use [Git LFS](https://git-lfs.com/).
-
->`git lfs fetch`
-> 
->`git lfs checkout`
-
+```bash
+git lfs fetch
+git lfs checkout
+```
 
 **Important Notice: Git LFS Required**
 >
