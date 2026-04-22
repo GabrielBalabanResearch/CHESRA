@@ -9,6 +9,35 @@ import re
 import numpy as np
 import seaborn as sns
 
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+
+cmap = plt.get_cmap('viridis')
+EFUNC_COLORS = {
+    "chesra1": cmap(0.0),
+    "chesra2": cmap(0.2),
+    "martonova3": cmap(0.3),
+    "MA":  cmap(0.4),
+    "CL": cmap(0.6),
+    "PZL": cmap(0.7),
+    "holzapfel-ogden":  cmap(0.8)
+}
+PARAM_ORDERS = {"chesra1": ["p1", "p2", "p3"],
+                "chesra2": ["p1", "p2", "p3", "p4"],                
+                "martonova3": ["mu", "a_f", "b_f", "a_n", "b_n"],
+                "holzapfel-ogden": ["a", "b", "a_f", "b_f", "a_s", "b_s", "a_fs", "b_fs"]}
+
+EFUNC_SYMB = {
+    "chesra1": "$\psi_{CH1}$",
+    "chesra2": "$\psi_{CH2}$",
+    "holzapfel-ogden": "$\psi_{HO}$",
+    "martonova3": "$\psi_{MA}$"
+}
+
+PNAMES={"chesra1": {"p1": "p_{f-fs}", "p2": "p_{iso}", "p3": "p_{coup}"},
+        "chesra2": {"p1": "p_{glob}", "p2": "p_{s-iso}", "p3": "p_{f-s}", "p4": "p_{f-iso}"},
+}
+
 RESULTS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 
 def gather_results():
@@ -16,7 +45,7 @@ def gather_results():
     results_all = {}
     for dirpath, dirnames, filenames in os.walk(RESULTS_FOLDER):
         if "optresults.txt" in filenames:
-            energy_function, run_number = Path(dirpath).parts[-2:]
+            energy_function, scenario, run_number = Path(dirpath).parts[-3:]
 
             #config_params = yaml.load(open(config_params_path, "r"))
             optresults = open(os.path.join(dirpath, "optresults.txt"), "r").readlines()
@@ -44,14 +73,14 @@ def gather_results():
                 results_all[energy_function] = []
                 matparam_names_all[energy_function] = matparam_names
 
-            new_results = [run_number,
+            new_results = [scenario,
+                           run_number,
                            initial_fun,
                            fun,
                            nfev,
                            runtime] + matparam_inivals + matparam_estvals
             
             results_all[energy_function].append(new_results)
-
     output_results(results_all, matparam_names_all)
 
 def output_results(results_all, matparam_names_all):
@@ -62,7 +91,7 @@ def output_results(results_all, matparam_names_all):
     for energy_function, results in results_all.items():
         ini_names = ["ini_" + name for name in matparam_names_all[energy_function]]
         est_names = ["est_" + name for name in matparam_names_all[energy_function]]
-        other_names = ["run number", "ini fun", "fun", "nfev", "runtime"]
+        other_names = ["scenario", "run number", "ini fun", "fun", "nfev", "runtime"]
         df = pd.DataFrame(results, columns = other_names + ini_names + est_names)
         output_file = os.path.join(output_folder, energy_function + "_results.csv")
         
@@ -155,6 +184,60 @@ def find_total_loss_values(file_path):
     
     return matching_lines, loss_values
 
+def get_xlabels(paramnames, efunc):
+    x_labels = [
+        "$\mathrm{\\mu}$" if pname == "mu"
+        else "$\mathrm{" + "{}".format(PNAMES[efunc][pname]) + "}$" if pname.startswith("p") and pname[1:].isdigit()
+        else "$\mathrm{" + pname.replace('_', '_{') + '}}$' if '_' in pname
+        else "$\mathrm{" + pname + "}$"
+        for pname in paramnames
+    ]
+    return x_labels
+
+def plot_paramrange(efunc, paramnames, opt_params_lhs, gt_params, ax, color, title = None):
+    x_labels = get_xlabels(paramnames, efunc)
+
+    paramords = ["est_" + p for p in paramnames]
+    est_params = opt_params_lhs[paramords]
+    est_params.columns = paramnames
+
+    #ax.grid(zorder = 0)
+    long_df = pd.melt(est_params,
+                      value_vars=paramnames,
+                      var_name="Parameter",
+                      value_name="Value")
+
+    sns.boxplot(x="Parameter",
+                y="Value",
+                data=long_df,
+                ax=ax,
+                color = color,
+                zorder = 10,
+                order=paramnames,
+        )
+    
+    ax.set_xlabel("")
+    # Plot true values as red horizontal lines
+    for i, pname in enumerate(paramnames):
+        true_val = gt_params[pname]
+        ax.hlines(
+            y=true_val,
+            xmin=i - 0.4,
+            xmax=i + 0.4,
+            colors="red",
+            linestyles="--",
+            linewidth=2,
+            zorder=20,
+            label = "Benchmark value",
+        )
+
+    if title:
+        ax.set_title(title, loc = "left", fontsize = 16, weight = "bold")
+    
+    ax.set_xticklabels(x_labels)
+    ax.set_ylabel("")
+    ax.set_yscale("log")
+
 def plot_results():
     gt_params = yaml.load(open("experiment_params.yaml", "r"), Loader = yaml.SafeLoader)["ground_truth"]
     
@@ -162,89 +245,52 @@ def plot_results():
     
     chesra1_results_file = os.path.join(lhs_results_root,"chesra1_results.csv")
     chesra2_results_file = os.path.join(lhs_results_root, "chesra2_results.csv")
-    hao_results_file = os.path.join(lhs_results_root, "holzapfel-ogden_results.csv")
     mart_results_file = os.path.join(lhs_results_root, "martonova3_results.csv")
+    hao_results_file = os.path.join(lhs_results_root, "holzapfel-ogden_results.csv")
 
     chesra1_df = pd.read_csv(chesra1_results_file)
     chesra2_df = pd.read_csv(chesra2_results_file)
-    hao_df = pd.read_csv(hao_results_file)
     mart_df = pd.read_csv(mart_results_file)
+    hao_df = pd.read_csv(hao_results_file)
 
-    chesra1_paramerrors = calc_relerror(chesra1_df, gt_params["chesra1"])
-    chesra2_paramerrors = calc_relerror(chesra2_df, gt_params["chesra2"])
-    hao_paramerrors = calc_relerror(hao_df, gt_params["holzapfel-ogden"])
-    mart_paramerrors = calc_relerror(mart_df, gt_params["martonova3"])
+    opt_params_inverse_lhs = {}
+    for scenario in ["ex_vivo_Klotz", "in_vivo_CMR"]:
+        opt_params_inverse_lhs[scenario] = {}
+        for efunc, efunc_df in zip(["chesra1", "chesra2", "martonova3", "holzapfel-ogden"], 
+                                   [chesra1_df, chesra2_df, mart_df, hao_df]):
+            opt_params_inverse_lhs[scenario][efunc] = efunc_df[list(filter(lambda x: "est_" in x, efunc_df.columns))]
 
-    fig, axs = plt.subplots(1, 4, figsize=(12, 6), sharey=True)
+    fig, axs = plt.subplots(2, 4, figsize=(12, 4    ), sharey="row")
 
-    hao_labels = ["$" + label.replace('_', '_{') + '}$' if '_' in label else "$" + label + "$" for label in gt_params["holzapfel-ogden"].keys()]
+    for i, scenario in enumerate(["ex_vivo_Klotz", "in_vivo_CMR"]):
+        for j, efunc in enumerate(PARAM_ORDERS.keys()):
+            plot_paramrange(efunc,
+                            PARAM_ORDERS[efunc],
+                            opt_params_inverse_lhs[scenario][efunc],
+                            gt_params[scenario][efunc],
+                            axs[i, j], 
+                            EFUNC_COLORS[efunc],
+                            title = None)
 
-    plot_errors(chesra1_paramerrors, 
-                gt_params["chesra1"], 
-                axs[0],
-                "pink",
-                "$\psi_{CH1}$")
+    # Custom legend handles
+    box_patch = mpatches.Patch(facecolor=EFUNC_COLORS["chesra1"], edgecolor= "k", label="Estimate")
+    line_patch = mlines.Line2D([], [], color="red", linestyle="--", linewidth=2, label="Benchmark value")
 
-    plot_errors(chesra2_paramerrors,
-                gt_params["chesra2"],
-                axs[1],
-                "lightblue",
-                "$\psi_{CH2}$")
-    
-    plot_errors(mart_paramerrors,
-                gt_params["martonova3"],
-                 axs[2],
-                "purple",
-                "$\psi_{MA}$")
+    axs[0, 0].legend(handles=[box_patch, line_patch], loc="best", fontsize = 10, frameon=False)
 
-    plot_errors(hao_paramerrors,
-                gt_params["holzapfel-ogden"],
-                axs[3],
-                "orange",
-                "$\psi_{HO}$")
+    fig.tight_layout(rect=[0, 0, 0.97, 1])
 
-    axs[0].set_ylabel("Normalized error")
+    labels = ["Ex vivo", "In vivo"]
+    for i,label in enumerate(labels):
+        row_bottom = axs[i, 0].get_position().y0
+        row_top = axs[i, 0].get_position().y1
+        row_mid = (row_bottom + row_top) / 2
+        fig.text(0.97, row_mid, label, va='center', ha='left', rotation=90, fontsize=18, weight='bold')
 
     # Adjust layout
-    plt.tight_layout()
-    plt.savefig("digital_twin_benchmark.png")
+    plt.savefig("3D_Simulaton_Benchmark.png")
     plt.show()
-    
-def calc_relerror(df, gt_yaml):
-    errors = []
-    for param in gt_yaml.keys():
-        errors.append(np.abs((df["est_" + param] - gt_yaml[param])/gt_yaml[param]))
-    return pd.DataFrame(np.array(errors).T, columns = gt_yaml.keys())
-
-def plot_errors(paramerrors, gt_yaml, ax, color, title = None, Y_CUT = 3.5):
-    paramnames = gt_yaml.keys()
-    x_labels = ["$" + pname.replace('_', '_{') + '}$' if '_' in pname else "$" + pname + "$" for pname in gt_yaml.keys()]
-
-    long_df = pd.melt(paramerrors, value_vars=paramnames, var_name="Parameter", value_name="Value")
-    sns.boxplot(x="Parameter",
-                y="Value",
-                data=long_df,
-                ax=ax,
-                color = color,
-                zorder = 10)
-    
-    for patch in ax.patches:
-        patch.set_alpha(1)
-    
-    ax.set_xticklabels(x_labels)
-    ax.set_ylabel("")
-    ax.set_yticks(np.arange(0, Y_CUT*2)/2.0)
-    ax.set_ylim(0, Y_CUT)
-
-    # Identify and mark outliers
-    for i, param in enumerate(paramnames):
-        outliers = paramerrors[paramerrors[param] > Y_CUT][param]
-        if not outliers.empty:
-            ax.scatter([i] * len(outliers), [Y_CUT] * len(outliers), color="red", marker="*", s=100, label="Outlier")
-
-    if title:
-        ax.set_title(title, loc = "left", fontsize = 16, weight = "bold")
 
 if __name__ == "__main__":
-    gather_results()
+    #gather_results()
     plot_results()

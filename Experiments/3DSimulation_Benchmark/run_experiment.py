@@ -51,7 +51,7 @@ def main(energy_function, scenario):
         simulation_params["output"]["files"]["logfile"] = f"results/{energy_function}/{scenario}/{i}/parameter_estimation.log"
         simulation_params["material_parameters"] = dict(lhs_params)
 
-        simpleheartlogger.logpath = f"results/{energy_function}/{i}/paramest.log"
+        simpleheartlogger.logpath = f"results/{energy_function}/{scenario}/{i}/paramest.log"
         
         simulation_params["elasticity_estimation"]["displacement_db"] = f"3Dsimulation_data/{energy_function}/{scenario}/noisy_disps/{i}_{DISP_NOISE}.hdf5"
         
@@ -63,8 +63,9 @@ def main(energy_function, scenario):
             os.makedirs(os.path.dirname(config_file))
 
         yaml.dump(convert_numpy_scalars_to_python(simulation_params),
-                  open(config_file, "w"), 
+                  open(config_file, "w"),
                   default_flow_style = False)
+
         estimate_elasticity_displacementloss(simulation_params)
 
 if __name__ == "__main__":
@@ -86,5 +87,6 @@ if __name__ == "__main__":
     parser.add_argument("-run_end",
                           type = int,
                           default = 20)
+
     args = parser.parse_args()
     main(args.energy_function, args.scenario)
