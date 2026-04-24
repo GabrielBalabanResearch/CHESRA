@@ -11,6 +11,8 @@ sys.path.insert(0, p)
 from CHESRA.data_classes.shear_sommer import ShearSommer
 from CHESRA.data_classes.shear_dokos import ShearDokos
 
+OUTPUT_PATH = "results"
+
 ########################################################################################################################
 # Definition of functions under consideration
 ########################################################################################################################
@@ -134,7 +136,7 @@ data_names = ['Shear Dokos', 'Shear Sommer']
 data_save_params = {'variable':[], 'value':[], 'model':[], 'dataset':[]}
 data_save_gof = {'GoF':[], 'model':[], 'dataset':[], 'nfev':[]}
 data_save_sRSS = {'model':[], 'dataset':[], 'sRSS':[]}
-os.makedirs('plot_data', exist_ok=True)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
 
 for d, data in enumerate(data_lst):
     data_name = data_names[d]
@@ -184,13 +186,13 @@ for d, data in enumerate(data_lst):
                 if sRSS > sRSS_max:
                     sRSS_max = sRSS
                     SSE, Y_a, res, nfev, p_best = data.fit_psi_to_data(psi, p, data_path, plot=True, var=var,
-                                                                       save_to='plot_data/worst/', psi_name=psi_names[i],
+                                                                       save_to= OUTPUT_PATH + '/worst/', psi_name=psi_names[i],
                                                                        init_vals=p_best,
                                                                        not_vary=range(len(p_best)))
                 if sRSS < sRSS_min:
                     sRSS_min = sRSS
                     SSE, Y_a, res, nfev, p_best = data.fit_psi_to_data(psi, p, data_path, plot=True, var=var,
-                                                                       save_to='plot_data/best/', psi_name=psi_names[i],
+                                                                       save_to= OUTPUT_PATH +'/best/', psi_name=psi_names[i],
                                                                        init_vals=p_best,
                                                                        not_vary=range(len(p_best)))
 
@@ -213,7 +215,7 @@ params_dist_df = pd.DataFrame(data_save_params)
 gof_dists_df = pd.DataFrame(data_save_gof)
 sRSS_df = pd.DataFrame(data_save_sRSS)
 
-params_dist_df.to_csv('plot_data/params_dist_df.csv')
-gof_dists_df.to_csv('plot_data/gof_dists_df.csv')
-sRSS_df.to_csv('plot_data/sRSS_df.csv')
+params_dist_df.to_csv(OUTPUT_PATH + '/params_dist_df.csv')
+gof_dists_df.to_csv(OUTPUT_PATH + '/gof_dists_df.csv')
+sRSS_df.to_csv(OUTPUT_PATH + '/sRSS_df.csv')
 

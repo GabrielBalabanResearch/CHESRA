@@ -13,15 +13,17 @@ plt.rc('text', usetex=True)
 plt.rcParams['font.family'] = 'serif'
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
+DATA_PATH = "results"
 
-yin_biaxial_model_df = pd.read_csv("plot_data/data_biaxial_yin.csv").drop(columns = "Unnamed: 0")
+
+yin_biaxial_model_df = pd.read_csv(DATA_PATH + "/data_biaxial_yin.csv").drop(columns = "Unnamed: 0")
 yin_biaxial_experiment_df = pd.read_csv("../../CHESRA/data/yin/yin_biaxial_experiment.csv")
 yin_biaxial_experiment_df["r"] = yin_biaxial_experiment_df[["r"]].applymap(lambda x: '{0:.2f}'.format(x))
 data_markers_yin_biaxial = {"2.05": "^",
                             "1.02": "s",
                             "0.48": "o"}
 
-sommer_biaxial_model_df = pd.read_csv("plot_data/data_biaxial_sommer.csv").drop(columns = "Unnamed: 0")
+sommer_biaxial_model_df = pd.read_csv(DATA_PATH + "/data_biaxial_sommer.csv").drop(columns = "Unnamed: 0")
 sommer_biaxial_experiment_df = pd.read_csv("../../CHESRA/data/sommer/sommer_biaxial_experiment.csv")
 sommer_biaxial_experiment_df["r"] = sommer_biaxial_experiment_df[["r"]].applymap(lambda x: '{0:.2f}'.format(x))
 
@@ -31,13 +33,13 @@ data_markers_sommer_biaxial = {"0.50": "o",
                                "1.33": "*",
                                "2.00": "^"}
 
-dokos_shear_model_df = pd.read_csv("plot_data/data_shear_dokos.csv").drop(columns = "Unnamed: 0")
+dokos_shear_model_df = pd.read_csv(DATA_PATH + "/data_shear_dokos.csv").drop(columns = "Unnamed: 0")
 dokos_shear_experiment_df = pd.read_csv("../../CHESRA/data/dokos/dokos_shear_experiment.csv")
 
-sommer_shear_model_df = pd.read_csv("plot_data/data_shear_sommer.csv").drop(columns = "Unnamed: 0")
+sommer_shear_model_df = pd.read_csv(DATA_PATH + "/data_shear_sommer.csv").drop(columns = "Unnamed: 0")
 sommer_shear_experiment_df = pd.read_csv("../../CHESRA/data/sommer/sommer_shear_experiment.csv")
 
-novak_biaxial_model_df = pd.read_csv("plot_data/data_biaxial_novak.csv").drop(columns = "Unnamed: 0")
+novak_biaxial_model_df = pd.read_csv(DATA_PATH + "/data_biaxial_novak.csv").drop(columns = "Unnamed: 0")
 novak_biaxial_experiment_df = pd.read_csv("../../CHESRA/data/novak/novak_biaxial_experiment.csv")
 novak_biaxial_experiment_df["protocol_otherextension"] = novak_biaxial_experiment_df[["protocol_otherextension"]].applymap(lambda x: '{0:.2f}'.format(x))
 
@@ -45,8 +47,8 @@ data_markers_novak_biaxial = {"1.20": "o",
                               "1.15": "s",
                               "1.10": "D"}
 
-novak_equibiaxial_model1_df = pd.read_csv("plot_data/data_equibiax_novak1.csv")
-novak_equibiaxial_model2_df = pd.read_csv("plot_data/data_equibiax_novak2.csv")
+novak_equibiaxial_model1_df = pd.read_csv(DATA_PATH + "/data_equibiax_novak1.csv")
+novak_equibiaxial_model2_df = pd.read_csv(DATA_PATH + "/data_equibiax_novak2.csv")
 novak_equibiaxial_experiment_df = pd.read_csv("../../CHESRA/data/novak/novak_equibiaxial_experiment.csv")
 
 data_markers_novak_equibiaxial = {"septum": "o",
@@ -75,7 +77,7 @@ plt.rc('legend', fontsize=fs)    # legend fontsize
 #plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-with open("plot_data/optimal_function.txt", "r") as f:
+with open(DATA_PATH + "/optimal_function.txt", "r") as f:
     optfunc = f.readlines()[0]
 
 ################################

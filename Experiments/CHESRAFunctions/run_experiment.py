@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.001, help='Hyperparameter alpha which balances the function length penalty in the fitness function')
     parser.add_argument('--data_lst', nargs='+', default=[BiaxialYin(), EquibiaxialNovak(), BiaxialNovak(), BiaxialSommer(), ShearDokos(), ShearSommer()],
                         help='Data used for strain energy function training')
-    parser.add_argument('--save_to', type=str, default='plot_data/', help='Path where to save the results')
+    parser.add_argument('--save_to', type=str, default='results/', help='Path where to save the results')
     parser.add_argument('--exp_data_path', type=str, default='../../', help='Path to the Data folder')
     parser.add_argument('--max_gen', type=int, default=50, help='Number of generations')
     parser.add_argument('--pop_size', type=int, default=200, help='Population size')

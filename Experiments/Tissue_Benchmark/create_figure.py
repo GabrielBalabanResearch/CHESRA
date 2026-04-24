@@ -17,6 +17,8 @@ sys.path.insert(0, p)
 from CHESRA.plot_utils import dataset_colors, latex_emph, dataset_annotate, plot_sheardata, funcname_annotate
 
 
+OUTPUT_PATH = "results"
+
 ########################################################################################################################
 # Plot results
 ########################################################################################################################
@@ -38,9 +40,9 @@ def color_boxplot(res, color):
         flier.set_markerfacecolor(dataset_colors[data_colname])  # Set the face color of the outliers
         flier.set_markeredgecolor("k")  # Optionally set the edge color
 
-params_dist_df = pd.read_csv('plot_data/params_dist_df.csv')
-gof_dists_df = pd.read_csv('plot_data/gof_dists_df.csv')
-sRSS_df = pd.read_csv('plot_data/sRSS_df.csv')
+params_dist_df = pd.read_csv(OUTPUT_PATH + '/params_dist_df.csv')
+gof_dists_df = pd.read_csv(OUTPUT_PATH + '/gof_dists_df.csv')
+sRSS_df = pd.read_csv(OUTPUT_PATH + '/sRSS_df.csv')
 
 
 num_params = [3, 4, 5, 8, 7]
@@ -63,7 +65,7 @@ best_or_worst = 'worst'
 
 model_sheardata_df = []
 for funcname in psi_names:
-    shear_fit_func = pd.read_csv(os.path.join('plot_data/%s/' % (best_or_worst), 'data_shear_dokos_%s.csv' % (funcname))).drop(columns = "Unnamed: 0")
+    shear_fit_func = pd.read_csv(os.path.join(OUTPUT_PATH + '/%s/' % (best_or_worst), 'data_shear_dokos_%s.csv' % (funcname))).drop(columns = "Unnamed: 0")
     shear_fit_func["function"] = funcname
 #     print(shear_fit_func)
     model_sheardata_df.append(shear_fit_func)
@@ -71,7 +73,7 @@ model_sheardata_df = pd.concat(model_sheardata_df)
 
 model_sheardata_sommer_df = []
 for funcname in psi_names:
-    shear_fit_func_sommer = pd.read_csv(os.path.join('plot_data/%s/' % (best_or_worst), 'data_shear_sommer_%s.csv' % (funcname))).drop(columns = "Unnamed: 0")
+    shear_fit_func_sommer = pd.read_csv(os.path.join(OUTPUT_PATH + '/%s/' % (best_or_worst), 'data_shear_sommer_%s.csv' % (funcname))).drop(columns = "Unnamed: 0")
     shear_fit_func_sommer["function"] = funcname
     model_sheardata_sommer_df.append(shear_fit_func_sommer)
 model_sheardata_sommer_df = pd.concat(model_sheardata_sommer_df)

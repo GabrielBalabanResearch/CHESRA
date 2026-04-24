@@ -106,3 +106,40 @@ docker run --rm -it \
   -v "$(pwd)/Experiments/3DSimulation_Benchmark:/workspace/Experiments/3DSimulation_Benchmark" \
   chesra
 ```
+
+### Running the experiments with Docker
+
+### Experiment 1 – Create SEFs with CHESRA
+```bash
+mkdir -p Experiments/CHESRAFunctions/results
+docker run --rm -it \
+  -v "$(pwd)/Experiments/CHESRAFunctions/results:/workspace/Experiments/CHESRAFunctions/results" \
+  gabrielbalaban/chesra:1.0.0 \
+  bash -c "cd Experiments/CHESRAFunctions && python3 run_experiment.py && python3 create_figure.py"
+```
+
+### Experiment 2 – Tissue benchmark
+```bash
+mkdir -p Experiments/Tissue_Benchmark/results
+docker run --rm -it \
+  -v "$(pwd)/Experiments/Tissue_Benchmark/results:/workspace/Experiments/Tissue_Benchmark/results" \
+  gabrielbalaban/chesra:1.0.0 \
+  bash -c "cd Experiments/Tissue_Benchmark && python3 run_experiment.py && python3 create_figure.py"
+```
+
+### Experiment 3 – 3D simulation benchmark
+Requires the simulation data from Git LFS. Pull it first:
+```bash
+git lfs pull
+unzip Experiments/3DSimulation_Benchmark/3Dsimulation_data.zip \
+  -d Experiments/3DSimulation_Benchmark/
+```
+Then run:
+```bash
+mkdir -p Experiments/3DSimulation_Benchmark/results
+docker run --rm -it \
+  -v "$(pwd)/Experiments/3DSimulation_Benchmark:/workspace/Experiments/3DSimulation_Benchmark" \
+  gabrielbalaban/chesra:1.0.0 \
+  bash -c "cd Experiments/3DSimulation_Benchmark && \
+           python3 run_experiment.py -energy_function chesra1 -scenario in_vivo_CMR"
+```
